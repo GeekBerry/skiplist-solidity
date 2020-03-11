@@ -30,8 +30,6 @@ library SkipListLib {
         uint32 _size;
     }
 
-    event NodeEvent(int indexed operate, bytes indexed key, uint32 indexed ptr);
-
     // =========================================
     function __min(uint a, uint b) private pure
     returns (uint)
@@ -188,7 +186,7 @@ library SkipListLib {
     }
 
     function set(SkipList storage self, bytes calldata key, bytes calldata value) external
-    returns (uint32)
+    returns (bool)
     {
         require(key.length > 0, 'key can not be empty');
 
@@ -197,7 +195,7 @@ library SkipListLib {
         // update exist node
         if(info.ptr != NULL_PTR) {
             self._map[info.ptr].value = value;
-            return self._size;
+            return false;
         }
 
         // create new node
@@ -206,7 +204,6 @@ library SkipListLib {
         node.key = key;
         node.value = value;
         self._size++;
-        emit NodeEvent(1, key, newPtr);
 
         // link forward pointer
         uint level = _randomLevel(MAX_LEVEL, DENOMINATOR);
@@ -221,7 +218,7 @@ library SkipListLib {
         node.backward = info.levelPtr[0];
         self._map[node.forward[0]].backward = newPtr;
 
-        return self._size;
+        return true;
     }
 
     function del(SkipList storage self, bytes calldata key) external
@@ -247,7 +244,6 @@ library SkipListLib {
         // remove exist node
         delete self._map[info.ptr];
         self._size--;
-        emit NodeEvent(-1, key, info.ptr);
 
         return true;
     }
