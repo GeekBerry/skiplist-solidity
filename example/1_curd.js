@@ -1,5 +1,5 @@
-const KVStore = require('../');
-// const KVStore = require('@geekberry/solidity-kvstore');
+// const KVStore = require('../');
+const KVStore = require('@geekberry/solidity-kvstore');
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -17,8 +17,7 @@ async function main() {
     // account must be writer privateKey for write
     account: '0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef',
 
-    // logger for debug
-    logger: console,
+    // logger: console, // for debug
   });
 
   /* set value */

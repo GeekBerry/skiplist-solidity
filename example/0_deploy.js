@@ -1,5 +1,5 @@
-const KVStore = require('../');
-// const KVStore = require('@geekberry/solidity-kvstore');
+// const KVStore = require('../');
+const KVStore = require('@geekberry/solidity-kvstore');
 
 async function main() {
   const kvStore = new KVStore({
@@ -10,8 +10,7 @@ async function main() {
     // this account will be admin of this database
     account: '0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef',
 
-    // logger for debug
-    logger: console,
+    logger: console, // for debug
   });
 
   // get address

@@ -1,5 +1,5 @@
-const KVStore = require('../');
-// const KVStore = require('@geekberry/solidity-kvstore');
+// const KVStore = require('../');
+const KVStore = require('@geekberry/solidity-kvstore');
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -7,7 +7,6 @@ function sleep(ms) {
 
 async function main() {
   const kvStoreAdmin = new KVStore({
-    // conflux node url
     url: 'http://localhost:12537',
     // url: 'http://testnet-jsonrpc.conflux-chain.org:12537', // conflux test-net
 
@@ -17,20 +16,19 @@ async function main() {
     // admin privateKey
     account: '0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef',
 
-    // logger for debug
-    logger: console,
+    // logger: console, // for debug
   });
 
   console.log(await kvStoreAdmin.getRole(kvStoreAdmin.account));
   // NamedTuple(isReader,isWriter,isAdmin) [ true, true, true ]
 
   console.log(await kvStoreAdmin.set('key', 'value')); // return transaction hash
-  await sleep(5000); // you might need wait seconds here
+  await sleep(10 * 1000); // you might need wait seconds here
   console.log(await kvStoreAdmin.get('key')); // as you see, set success!
   // <Buffer 76 61 6c 75 65>
 
   console.log(await kvStoreAdmin.removeWriter(kvStoreAdmin.account)); // return transaction hash
-  await sleep(5000); // you might need wait seconds here
+  await sleep(10 * 1000); // you might need wait seconds here
   console.log(await kvStoreAdmin.getRole(kvStoreAdmin.account));
   // NamedTuple(isReader,isWriter,isAdmin) [ true, false, true ] // not writer any more
 
@@ -57,7 +55,7 @@ async function main() {
   }
 
   console.log(await kvStoreAdmin.addReader(kvStoreReader.account));
-  await sleep(5000); // you might need wait seconds here
+  await sleep(10 * 1000); // you might need wait seconds here
   console.log(await kvStoreAdmin.getRole(kvStoreReader.account));
   // NamedTuple(isReader,isWriter,isAdmin) [ true, false, false ]
 
