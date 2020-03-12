@@ -1,0 +1,28 @@
+{
+  "name": "@geekberry/solidity-kvstore",
+  "version": "0.0.0",
+  "author": "<geekberry@qq.com>",
+  "license": "MIT",
+  "repository": "https://github.com/GeekBerry/skiplist-solidity.git",
+  "keywords": [
+    "solidity",
+    "kvstore",
+    "database",
+    "contract",
+    "skiplist"
+  ],
+  "main": "src/index.js",
+  "fils": [
+    "src"
+  ],
+  "dependencies": {
+    "@geekberry/js-conflux-sdk": "^0.8.4"
+  },
+  "devDependencies": {
+    "solc": "^0.6.4"
+  },
+  "scripts": {
+    "complie": "node complie.js",
+    "public": "yarn publish --access=public"
+  }
+}

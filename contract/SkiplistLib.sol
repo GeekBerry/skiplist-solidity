@@ -40,7 +40,24 @@ library SkipListLib {
         return b;
     }
 
-    function __compare(bytes memory one, bytes memory other) private pure
+    function __random(uint seed) private view
+    returns (uint)
+    {
+        bytes memory encode = abi.encodePacked(block.difficulty, block.coinbase, block.timestamp, seed);
+        return uint256(keccak256(encode));
+    }
+
+    function _randomLevel(uint max, uint denominator) private view
+    returns (uint)
+    {
+        uint level = 1;
+        while(level<max && __random(level) % denominator == 0) {
+            level += 1;
+        }
+        return level;
+    }
+
+    function __compare(bytes memory one, bytes memory other) internal pure
     returns (int)
     {
         for(uint i=0; i<__min(one.length, other.length); i++) {
@@ -59,24 +76,6 @@ library SkipListLib {
 
         return 0;
     }
-
-    function __random(uint seed) private view
-    returns (uint)
-    {
-        bytes memory encode = abi.encodePacked(block.difficulty, block.coinbase, now, seed);
-        return uint256(keccak256(encode));
-    }
-
-    function _randomLevel(uint max, uint denominator) private view
-    returns (uint)
-    {
-        uint level = 1;
-        while(level<max && __random(level) % denominator == 0) {
-            level += 1;
-        }
-        return level;
-    }
-
     // -----------------------------------------
     function _allocPtr(SkipList storage self) internal view
     returns (uint32)
@@ -122,50 +121,39 @@ library SkipListLib {
         return info;
     }
 
-    // -----------------------------------------
-    function size(SkipList storage self) external view
-    returns (uint)
-    {
-        return self._size;
-    }
-    
-    function has(SkipList storage self, bytes calldata key) external view
-    returns (bool) {
-        _FindInfo memory info = _findPtr(self, key);
-
-        return info.ptr != NULL_PTR;
-    }
-
-    function get(SkipList storage self, bytes calldata key) external view
-    returns (bytes memory value)
-    {
-        _FindInfo memory info = _findPtr(self, key);
-
-        return self._map[info.ptr].value;
-    }
-
-    function list(SkipList storage self, bytes calldata key, uint limit, bool reverse) external view
-    returns (Pair[] memory)
+    function _listPtr(SkipList storage self, bytes memory key, uint limit, bool reverse) internal view
+    returns (uint, uint32[] memory)
     {
         uint32 ptr;
 
         // find nearest ptr
-        _FindInfo memory info = _findPtr(self, key);
-        if(info.ptr != NULL_PTR) {
-            ptr = info.ptr;
-        } else {
-            uint32 prevPtr = info.levelPtr[0];
-
+        if(key.length == 0) {
+            // empty key start from head or tail
             if(reverse) {
-                ptr = prevPtr;
+                ptr = self._map[NULL_PTR].backward;
             } else {
-                ptr = self._map[prevPtr].forward[0];
+                ptr = self._map[NULL_PTR].forward[0];
+            }
+        } else {
+            // search key
+            _FindInfo memory info = _findPtr(self, key);
+            if(info.ptr != NULL_PTR) {
+                ptr = info.ptr;
+            } else {
+                uint32 prevPtr = info.levelPtr[0];
+
+                if(reverse) {
+                    ptr = prevPtr;
+                } else {
+                    ptr = self._map[prevPtr].forward[0];
+                }
             }
         }
 
         // list node ptr
-        uint count = 0;
+        uint count;
         uint32[] memory ptrArray = new uint32[](limit);
+
         for(count = 0; count<limit && ptr!=NULL_PTR; count++) {
             ptrArray[count] = ptr;
 
@@ -176,6 +164,38 @@ library SkipListLib {
             }
         }
 
+        return (count, ptrArray);
+    }
+
+    // -----------------------------------------
+    function size(SkipList storage self) internal view
+    returns (uint)
+    {
+        return self._size;
+    }
+
+    function has(SkipList storage self, bytes memory key) internal view
+    returns (bool) {
+        _FindInfo memory info = _findPtr(self, key);
+
+        return info.ptr != NULL_PTR;
+    }
+
+    function get(SkipList storage self, bytes memory key) internal view
+    returns (bytes memory value)
+    {
+        _FindInfo memory info = _findPtr(self, key);
+
+        return self._map[info.ptr].value;
+    }
+
+    function list(SkipList storage self, bytes memory key, uint limit, bool reverse) internal view
+    returns (Pair[] memory)
+    {
+        uint count;
+        uint32[] memory ptrArray;
+        (count, ptrArray)= _listPtr(self, key, limit, reverse);
+
         // get key and value
         Pair[] memory array = new Pair[](count);
         for(uint i=0; i<count; i++) {
@@ -185,7 +205,7 @@ library SkipListLib {
         return array;
     }
 
-    function set(SkipList storage self, bytes calldata key, bytes calldata value) external
+    function set(SkipList storage self, bytes memory key, bytes memory value) internal
     returns (bool)
     {
         require(key.length > 0, 'key can not be empty');
@@ -221,7 +241,7 @@ library SkipListLib {
         return true;
     }
 
-    function del(SkipList storage self, bytes calldata key) external
+    function del(SkipList storage self, bytes memory key) internal
     returns (bool)
     {
         _FindInfo memory info = _findPtr(self, key);
@@ -246,5 +266,17 @@ library SkipListLib {
         self._size--;
 
         return true;
+    }
+
+    function clear(SkipList storage self) internal
+    {
+        uint32 ptr = NULL_PTR;
+        do {
+            uint32 prevPtr = self._map[ptr].backward;
+            delete self._map[ptr];
+            ptr = prevPtr;
+        } while(ptr != NULL_PTR);
+
+        self._size = 0;
     }
 }
