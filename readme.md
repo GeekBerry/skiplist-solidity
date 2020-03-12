@@ -60,6 +60,6 @@ main()
 
 ## Example
 
-* [deploy](https://github.com/GeekBerry/skiplist-solidity/blob/master/example/0_deploy.js)
-* [curd](https://github.com/GeekBerry/skiplist-solidity/blob/master/example/1_curd.js)
-* [role](https://github.com/GeekBerry/skiplist-solidity/blob/master/example/2_role.js)
+* [deploy](https://github.com/GeekBerry/solidity-kvstore/blob/master/example/0_deploy.js)
+* [curd](https://github.com/GeekBerry/solidity-kvstore/blob/master/example/1_curd.js)
+* [role](https://github.com/GeekBerry/solidity-kvstore/blob/master/example/2_role.js)

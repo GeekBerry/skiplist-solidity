@@ -8,7 +8,8 @@ function sleep(ms) {
 async function main() {
   const kvStoreAdmin = new KVStore({
     // conflux node url
-    url: 'http://testnet-jsonrpc.conflux-chain.org:12537',
+    url: 'http://localhost:12537',
+    // url: 'http://testnet-jsonrpc.conflux-chain.org:12537', // conflux test-net
 
     // KVStore contract address
     address: '0x8bfc6fd9437cf1879fb84aade867b6e81efb5631',

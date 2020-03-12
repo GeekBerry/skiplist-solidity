@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "author": "<geekberry@qq.com>",
   "license": "MIT",
-  "repository": "https://github.com/GeekBerry/skiplist-solidity.git",
+  "repository": "https://github.com/GeekBerry/solidity-kvstore.git",
   "keywords": [
     "solidity",
     "kvstore",

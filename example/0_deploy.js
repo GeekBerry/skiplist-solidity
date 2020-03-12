@@ -3,8 +3,8 @@ const KVStore = require('../');
 
 async function main() {
   const kvStore = new KVStore({
-    // conflux node url
-    url: 'http://testnet-jsonrpc.conflux-chain.org:12537',
+    url: 'http://localhost:12537',
+    // url: 'http://testnet-jsonrpc.conflux-chain.org:12537', // conflux test-net
 
     // account must be privateKey for deploy
     // this account will be admin of this database
