@@ -9,49 +9,69 @@ class KVStore {
     logger,
   }) {
     this.cfx = new Conflux({ url, logger });
-    this.contract = this.cfx.Contract({ abi, code, address });
 
     try {
       this.account = this.cfx.Account(account);
+      this.nonce = undefined;
     } catch (e) {
       this.account = account;
     }
 
+    this.contract = this.cfx.Contract({ abi, code, address });
+    this._wrapABI(abi);
+  }
+
+  _wrapABI(abi) {
+    this.constructor = this._wrapConstructor();
+
     abi.forEach(fragment => {
       switch (fragment.stateMutability) {
         case 'nonpayable':
-          this[fragment.name] = async (...args) => {
-            try {
-              const { transactionHash } = await this.contract[fragment.name](...args)
-                .sendTransaction({ from: this.account })
-                .confirmed();
-
-              return transactionHash;
-            } catch (e) {
-              throw Error(`${fragment.name}(${args.join(',')})`);
-            }
-
-          };
+          this[fragment.name] = this._wrapSend(fragment.name);
           break;
 
         case 'view':
-          this[fragment.name] = (...args) => {
-            return this.contract[fragment.name](...args)
-              .call({ from: this.account });
-          };
+          this[fragment.name] = this._wrapCall(fragment.name);
           break;
 
         default:
           break;
       }
     });
+  }
 
-    this.constructor = async (...args) => {
+  _wrapConstructor() {
+    return async (...args) => {
       const { contractCreated } = await this.contract.constructor(...args)
         .sendTransaction({ from: this.account, to: null })
         .confirmed();
-
       return contractCreated;
+    };
+  }
+
+  _wrapSend(name) {
+    return async (...args) => {
+      if (this.nonce === undefined) {
+        this.nonce = await this.cfx.getTransactionCount(this.account);
+      }
+
+      try {
+        const { transactionHash } = await this.contract[name](...args)
+          .sendTransaction({ from: this.account, nonce: this.nonce })
+          .confirmed();
+        return transactionHash;
+      } catch (e) {
+        throw Error(`${name}(${args.join(',')}) ${e}`);
+      } finally {
+        this.nonce += 1;
+      }
+    };
+  }
+
+  _wrapCall(name) {
+    return (...args) => {
+      return this.contract[name](...args)
+        .call({ from: this.account });
     };
   }
 }

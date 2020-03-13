@@ -1,10 +1,10 @@
-// const KVStore = require('../');
-const KVStore = require('@geekberry/solidity-kvstore');
+// const KVStore = require('@geekberry/solidity-kvstore');
+const KVStore = require('../');
 
 async function main() {
   const kvStore = new KVStore({
-    url: 'http://localhost:12537',
     // url: 'http://testnet-jsonrpc.conflux-chain.org:12537', // conflux test-net
+    url: 'http://localhost:12537',
 
     // account must be privateKey for deploy
     // this account will be admin of this database

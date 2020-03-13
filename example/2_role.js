@@ -1,14 +1,15 @@
-// const KVStore = require('../');
-const KVStore = require('@geekberry/solidity-kvstore');
+// const KVStore = require('@geekberry/solidity-kvstore');
+const KVStore = require('../');
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+// ============================================================================
 async function main() {
   const kvStoreAdmin = new KVStore({
-    url: 'http://localhost:12537',
     // url: 'http://testnet-jsonrpc.conflux-chain.org:12537', // conflux test-net
+    url: 'http://localhost:12537',
 
     // KVStore contract address
     address: '0x8bfc6fd9437cf1879fb84aade867b6e81efb5631',
@@ -16,19 +17,23 @@ async function main() {
     // admin privateKey
     account: '0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef',
 
-    // logger: console, // for debug
+    // for debug
+    logger: {
+      info: v => console.log(JSON.stringify(v, null, 2)),
+      error: v => console.error(JSON.stringify(v, null, 2)),
+    },
   });
 
   console.log(await kvStoreAdmin.getRole(kvStoreAdmin.account));
   // NamedTuple(isReader,isWriter,isAdmin) [ true, true, true ]
 
   console.log(await kvStoreAdmin.set('key', 'value')); // return transaction hash
-  await sleep(10 * 1000); // you might need wait seconds here
+  await sleep(5000); // you might need wait seconds here
   console.log(await kvStoreAdmin.get('key')); // as you see, set success!
   // <Buffer 76 61 6c 75 65>
 
   console.log(await kvStoreAdmin.removeWriter(kvStoreAdmin.account)); // return transaction hash
-  await sleep(10 * 1000); // you might need wait seconds here
+  await sleep(5000); // you might need wait seconds here
   console.log(await kvStoreAdmin.getRole(kvStoreAdmin.account));
   // NamedTuple(isReader,isWriter,isAdmin) [ true, false, true ] // not writer any more
 
@@ -51,11 +56,13 @@ async function main() {
   try {
     await kvStoreReader.get('key');
   } catch (e) {
-    console.error(e); // Permissions error!
+    console.error(e.message); // Permissions error!
   }
 
+  await sleep(5000); // you might need wait seconds here
+
   console.log(await kvStoreAdmin.addReader(kvStoreReader.account));
-  await sleep(10 * 1000); // you might need wait seconds here
+  await sleep(5000); // you might need wait seconds here
   console.log(await kvStoreAdmin.getRole(kvStoreReader.account));
   // NamedTuple(isReader,isWriter,isAdmin) [ true, false, false ]
 

@@ -1,5 +1,5 @@
-// const KVStore = require('../');
-const KVStore = require('@geekberry/solidity-kvstore');
+// const KVStore = require('@geekberry/solidity-kvstore');
+const KVStore = require('../');
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -8,8 +8,8 @@ function sleep(ms) {
 // ============================================================================
 async function main() {
   const kvStore = new KVStore({
-    url: 'http://localhost:12537',
     // url: 'http://testnet-jsonrpc.conflux-chain.org:12537', // conflux test-net
+    url: 'http://localhost:12537',
 
     // KVStore contract address
     address: '0x8bfc6fd9437cf1879fb84aade867b6e81efb5631',
@@ -20,55 +20,57 @@ async function main() {
     // logger: console, // for debug
   });
 
+  console.log(await kvStore.cfx.getBalance(kvStore.account)); // check balance
+
   /* set value */
-  console.log(await kvStore.set(Buffer.from([0x5]), Buffer.from([0xff]))); // return transaction hash
+  console.log(await kvStore.set(Buffer.from([0x45]), Buffer.from([0x65]))); // return transaction hash
+  console.log(await kvStore.set(Buffer.from([0x43]), Buffer.from([]))); // return transaction hash
+  console.log(await kvStore.set(Buffer.from([0x49]), 'string')); // return transaction hash
+  console.log(await kvStore.set(Buffer.from([0x47]), Buffer.from(''))); // return transaction hash
+
   await sleep(5000); // you might need wait seconds here
-  console.log(await kvStore.set(Buffer.from([0x3]), Buffer.from([]))); // return transaction hash
-  await sleep(5000); // you might need wait seconds here
-  console.log(await kvStore.set(Buffer.from([0x9]), 'string')); // return transaction hash
-  await sleep(5000); // you might need wait seconds here
-  console.log(await kvStore.set(Buffer.from([0x7]), Buffer.from(''))); // return transaction hash
 
   /* get value */
   console.log(await kvStore.size()); // 4n
 
-  console.log(await kvStore.get(Buffer.from([0x3]))); // <Buffer > value set by empty Buffer
-  console.log(await kvStore.get(Buffer.from([0x4]))); // <Buffer > not exist return empty Buffer
+  console.log(await kvStore.get(Buffer.from([0x43]))); // <Buffer > value set by empty Buffer
+  console.log(await kvStore.get(Buffer.from([0x44]))); // <Buffer > not exist return empty Buffer
 
-  console.log(await kvStore.has(Buffer.from([0x3]))); // true
-  console.log(await kvStore.has(Buffer.from([0x4]))); // false
+  console.log(await kvStore.has(Buffer.from([0x43]))); // true
+  console.log(await kvStore.has(Buffer.from([0x44]))); // false
 
   /* list(key, limit, reverse) */
   console.log(await kvStore.list(Buffer.from([]), 10000, false));
   // [
-  //   NamedTuple(key,value) [ <Buffer 03>, <Buffer > ],
-  //   NamedTuple(key,value) [ <Buffer 05>, <Buffer ff> ],
-  //   NamedTuple(key,value) [ <Buffer 07>, <Buffer > ],
-  //   NamedTuple(key,value) [ <Buffer 09>, <Buffer 73 74 72 69 6e 67> ]
+  //   NamedTuple(key,value) [ <Buffer 43>, <Buffer > ],
+  //   NamedTuple(key,value) [ <Buffer 45>, <Buffer 65> ],
+  //   NamedTuple(key,value) [ <Buffer 47>, <Buffer > ],
+  //   NamedTuple(key,value) [ <Buffer 49>, <Buffer 73 74 72 69 6e 67> ]
   // ]
 
-  console.log(await kvStore.list(Buffer.from([0x4]), 2, false));
+  console.log(await kvStore.list(Buffer.from([0x44]), 2, false));
   // [
-  //   NamedTuple(key,value) [ <Buffer 05>, <Buffer ff> ],
-  //   NamedTuple(key,value) [ <Buffer 07>, <Buffer > ]
+  //   NamedTuple(key,value) [ <Buffer 45>, <Buffer 65> ],
+  //   NamedTuple(key,value) [ <Buffer 47>, <Buffer > ]
   // ]
 
-  console.log(await kvStore.list(Buffer.from([0x4]), 2, true));
+  console.log(await kvStore.list(Buffer.from([0x44]), 2, true));
   // [
-  //   NamedTuple(key,value) [ <Buffer 03>, <Buffer > ]
+  //   NamedTuple(key,value) [ <Buffer 43>, <Buffer > ]
   // ]
 
   /* delete value */
-  console.log(await kvStore.del(Buffer.from([0x5]))); // return transaction hash
+  console.log(await kvStore.del(Buffer.from([0x45]))); // return transaction hash
+  console.log(await kvStore.del(Buffer.from([0x46]))); // return transaction hash
+
   await sleep(5000); // you might need wait seconds here
-  console.log(await kvStore.del(Buffer.from([0x6]))); // return transaction hash
-  await sleep(5000); // you might need wait seconds here
+
   console.log(await kvStore.size()); // 3n
   console.log(await kvStore.list(Buffer.from([]), 10000, false));
   // [
-  //   NamedTuple(key,value) [ <Buffer 03>, <Buffer > ],
-  //   NamedTuple(key,value) [ <Buffer 07>, <Buffer > ],
-  //   NamedTuple(key,value) [ <Buffer 09>, <Buffer 73 74 72 69 6e 67> ]
+  //   NamedTuple(key,value) [ <Buffer 43>, <Buffer > ],
+  //   NamedTuple(key,value) [ <Buffer 47>, <Buffer > ],
+  //   NamedTuple(key,value) [ <Buffer 49>, <Buffer 73 74 72 69 6e 67> ]
   // ]
 
   /* clear */
