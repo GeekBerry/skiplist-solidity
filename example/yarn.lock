@@ -14,10 +14,10 @@
     superagent "^5.1.0"
     ws "^7.2.1"
 
-"@geekberry/solidity-kvstore@^0.0.1":
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/@geekberry/solidity-kvstore/-/solidity-kvstore-0.0.1.tgz#b2ead8c14a8785a1832de9392a1c5592db3030ec"
-  integrity sha512-xTJDh0jK32NgQoSYmOOBRnHXJJWNmIPzz+XScBSieLLjKijIUAlxzJGqNkt04+YtDYb7vX+ALK5gFEED2RMlzQ==
+"@geekberry/solidity-kvstore@^0.0.3":
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/@geekberry/solidity-kvstore/-/solidity-kvstore-0.0.3.tgz#818d2307265a9f74884538134bb5b2520b06cf25"
+  integrity sha512-lZePX9oVv4vPADUPpCTG9xCPUDyGIneLcJsBVb+5SZLD7LcUTpAS6qXx1ojZtD4mYUXS8DJ/OIQMxSLuBzM0zw==
   dependencies:
     "@geekberry/js-conflux-sdk" "^0.8.4"
 
@@ -227,9 +227,9 @@ keccak@^2.0.0:
     safe-buffer "^5.2.0"
 
 lodash@^4.17.15:
-  version "4.17.15"
-  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.15.tgz#b447f6670a0455bbfeedd11392eff330ea097548"
-  integrity sha512-8xOcRHvCjnocdS5cpwXQXVzmmh5e5+saE2QGoeQmbKmRS6J3VQppPOIt0MnmE+4xlZoumy0GPG0D0MVIQbNA1A==
+  version "4.17.21"
+  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
+  integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
 
 md5.js@^1.3.4:
   version "1.3.5"
